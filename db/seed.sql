@@ -4,12 +4,10 @@ VALUES
     (1, 'Product'),
     (2, 'Engineering'),
     (3, 'Operations'),
-    (4, 'Marketing'),
-    (5, 'Finance'),
-    (6, 'Legal'),
-    (7, 'Sales'),
-    (8, 'Human Relations'),
-    (9, 'C-Suite')
+    (4, 'Finance'),
+    (5, 'Legal'),
+    (6, 'Human Relations'),
+    (7, 'C-Suite')
 INSERT INTO
     role (title, salary, department_id)
 VALUES
@@ -22,19 +20,15 @@ VALUES
     ('Business Analyst', '90000', 3),
     ('Team Leader', '70000', 3),
     ('Cust Svc Rep', '35000', 3),
-    ('Marketing Manager', '90000', 4),
-    ('Marketing Specialist', '70000', 4),
-    ('Accountant', '90000', 5),
-    ('Head of Finance', '120000', 5),
-    ('Legal Director', '150000', 6),
-    ('Lawyer', '120000', 6),
-    ('Sales Manager', '100000', 7),
-    ('Sales Rep', '50000 base', 7),
-    ('HR Manager', '90000', 8),
-    ('HR Generalist', '75000', 8),
-    ('CEO', '1500000', 9),
-    ('CFO', '1000000', 9),
-    ('COO', '1000000', 9)
+    ('Accountant', '90000', 4),
+    ('Head of Finance', '120000', 4),
+    ('Legal Director', '150000', 5),
+    ('Lawyer', '120000', 5),
+    ('HR Manager', '90000', 6),
+    ('HR Generalist', '75000', 6),
+    ('CEO', '1500000', 7),
+    ('CFO', '1000000', 7),
+    ('COO', '1000000', 7)
 INSERT INTO
     employee (first_name, last_name, role_id)
 VALUES
@@ -56,8 +50,6 @@ VALUES
     ('Robert', 'Kardashian'),
     ('Dave', 'Ramsey'),
     ('Bernard', 'Madoff'),
-    ('Suze', 'Orman'),
-    ('Satya', 'Nadella'),
     ('Michelle', 'Obama'),
     ('Steve', 'Wozniak'),
     ('Sundar', 'Pichai'),
