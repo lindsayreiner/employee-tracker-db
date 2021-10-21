@@ -2,6 +2,7 @@ const { prompt } = require('inquirer');
 const consoleTable = require('console.table');
 const logo = require('asciiart-logo');
 const config = require('./package.json');
+const dbConnection = require('./db/connection.js')
 
 
 const mainActionMenu = [
@@ -103,7 +104,7 @@ const loadImage = () => {
     );
 };
 
-//when do I use arrow functions instead of regular?
+
 const startQuestions = async input => {
     const selection = await prompt(mainActionMenu);
 
@@ -124,7 +125,7 @@ const selectionTriage = async selection => {
     };
 
     if (selection === "View All Roles") {
-
+        // console.table('All Role Types', [])
     };
 
     if (selection === "Add Role") {
