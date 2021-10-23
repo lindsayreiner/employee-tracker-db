@@ -2,7 +2,8 @@ const { prompt } = require('inquirer');
 const consoleTable = require('console.table');
 const logo = require('asciiart-logo');
 const config = require('./package.json');
-const dbConnection = require('./db/connection.js')
+const dbConnection = require('./db/connection.js');
+const db = dbConnection();
 
 
 const mainActionMenu = [
@@ -70,21 +71,7 @@ const addEmployee = [
     }
 ];
 
-const updateEmployeeRole = [
-    {
-        input: "list",
-        name: "updateRoleEmployeeName",
-        message: "Which employee's role do you want to update?",
-        choices: [""] //list of active employees in db
-    },
-    {
-        input: "list",
-        name: "",
-        message: "Which role do you want to assign to the selected employee?",
-        choices: ["Head of Product", "Product Manager", "UI/UX Designer", "Software Engineer", "Lead Engineer", "Ops Manager", "Business Analyst", "Team Leader", "Customer Svc Rep", "Accountant", "Head of Finance", "Legal Director", "Lawyer", "HR Manager", "HR Generalist", "CEO", "CFO", "COO"],
-        default: "Head of Product"
-    }
-];
+
 
 const loadImage = () => {
     console.log(
@@ -111,6 +98,7 @@ const startQuestions = async input => {
     selectionTriage(input);
 };
 
+
 const selectionTriage = async selection => {
     if (selection === "View All Employees") {
 
@@ -120,7 +108,26 @@ const selectionTriage = async selection => {
         const newEmployee = await prompt(addEmployee);
     };
 
+    //call db for all employees select concat first and last name of employee
     if (selection === "Update Employee Role") {
+        const employees = await db.execute("select * from employee_db")
+        console.log(employees);
+        //const roles =
+        const updateEmployeeRole = [
+            {
+                input: "list",
+                name: "updateRoleEmployeeName",
+                message: "Which employee's role do you want to update?",
+                choices: employees //list of active employees in db
+            },
+            {
+                input: "list",
+                name: "",
+                message: "Which role do you want to assign to the selected employee?",
+                choices: roles
+
+            }
+        ];
         const updateRole = await prompt(updateEmployeeRole);
     };
 
