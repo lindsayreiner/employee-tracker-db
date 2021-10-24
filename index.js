@@ -5,6 +5,15 @@ const config = require('./package.json');
 const dbConnection = require('./db/connection.js');
 const db = dbConnection();
 
+const viewEmployees = require('./utilities/view_employees');
+const viewRoles = require('./utilities/view_roles');
+const viewDepartments = require('./utilities/view_departments');
+
+const changeRole = require('./utilities/update_employee');
+const addNewDepartment = require('./utilities/add_department');
+const addNewEmployee = require('./utilities/add_employee');
+const addNewRole = require('./utilities/add_role');
+
 
 const mainActionMenu = [
     {
@@ -95,7 +104,7 @@ const loadImage = () => {
 const startQuestions = async input => {
     const selection = await prompt(mainActionMenu);
 
-    selectionTriage(input);
+    selectionTriage(selection);
 };
 
 
