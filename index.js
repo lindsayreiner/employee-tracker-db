@@ -2,8 +2,8 @@ const { prompt } = require('inquirer');
 require('console.table');
 const logo = require('asciiart-logo');
 // const config = require('./package.json');
-// const dbConnection = require('./db/connection.js');
-const db = require('./db');
+
+const db = require('./db/connection');
 
 // const dbQueries = require('./db/index.js');
 
@@ -42,7 +42,6 @@ const viewEmployees = () => {
             if (err) {
                 throw err
             }
-            console.log('----------- All Employees ----------');
             console.table(results);
             console.log('press up or down to continue');
         });
@@ -60,8 +59,8 @@ const addDepartment = (department) => {
         });
 };
 
-const addEmployee = (employee) => {
-    const employeeInsertion = [employee.first_name, employee.last_name, employee.role_id, employee.manager_id]
+const addNewEmployee = (employee) => {
+    const employeeInsertion = [employee.first_name, employee.last_name, eemployee.role_id, eemployee.manager_id]
     db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, employeeInsertion,
         (err) => {
             if (err) {
@@ -74,10 +73,8 @@ const addEmployee = (employee) => {
 };
 
 const addRole = (role) => {
-    db.query(`
- INSERT INTO role (title, salary, department_id)
- VALUE (?, ?, ?)
-    `, role,
+    console.log('role:', role);
+    db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [role.title, role.salary, role.department_id],
         (err) => {
             if (err) {
                 throw err
@@ -91,15 +88,15 @@ const addRole = (role) => {
 const viewDepartments = () => {
     db.query(`
     SELECT
-    d.id AS 'Department ID',
-    d.dept_name AS 'Department Name'
-    FROM department
+    d.id AS 'Dept ID',
+    d.dept_name AS 'Dept Name'
+    FROM department d
     `,
         (err, results) => {
             if (err) {
                 throw err
             }
-            console.log('----------- All Departments ----------');
+
             console.table(results);
             console.log('press up or down to continue');
         });
@@ -113,22 +110,20 @@ const viewRoles = (selection) => {
     r.title AS 'Title',
     r.salary AS 'Salary',
     r.department_id AS 'Department Code'
-    FROM role
+    FROM role r
     `,
         (err, results) => {
             if (err) {
                 throw err
             }
-            console.log('----------- All Roles ----------');
+
             console.table(results);
             console.log('press up or down to continue');
         });
 };
 
-const updateEmployeeRole = () => {
-    db.query(`
-   
-    `,
+const updateEmployeeRole = (role) => {
+    db.query(`UPDATE employee SET employee.role_id = (?) where employee.id = (?)`,
         (err) => {
             if (err) {
                 throw err
@@ -160,111 +155,133 @@ const loadImage = () => {
 
 
 const startQuestions = async () => {
-    const selection = await prompt(mainActionMenu);
+    const { selectAction } = await prompt(mainActionMenu);
 
-    selectionTriage(selection);
+    selectionTriage(selectAction);
 };
 
 
 const selectionTriage = async selection => {
-    if (selection === "View All Employees") {
-        viewEmployees();
-    } else if (selection === "Add Employee") {
-        const newEmployee = await prompt(addEmployee);
-        const addEmployee = [
-            {
-                type: "input",
-                name: "employeeFirstName",
-                message: "What is the employee's first name?"
-            },
-            {
-                type: "input",
-                name: "employeeLastName",
-                message: "What is the employee's last name?"
-            },
-            {
-                type: "list",
-                name: "employeeRole",
-                message: "What is the employee's role?",
-                choices: [""], //list of roles directly from db
-                default: "Head of Product"
-            },
-            {
-                type: "list",
-                name: "employeeManager",
-                message: "Who is the employee's manager?",
-                choices: [""]//list of active managers in db
-            }
-        ]
+    switch (selection) {
+        case "View All Employees":
+            viewEmployees();
+            startQuestions();
+            break;
+        case "Add Employee":
+            const roles = await db.query('select * from role');
+            const employeeRoles = roles.map(({ title, id }) => ({ name: title, value: id }));
 
-    } else if (selection === "Update Employee Role") {
-        //call db for all employees select concat first and last name of employee
-        const employees = await db.execute("select * from employee_db")
-        console.log(employees);
-        //const roles =
-        const updateEmployeeRole = [
-            {
-                input: "list",
-                name: "updateRoleEmployeeName",
-                message: "Which employee's role do you want to update?",
-                choices: employees //list of active employees in db
-            },
-            {
-                input: "list",
-                name: "",
-                message: "Which role do you want to assign to the selected employee?",
-                choices: roles
+            const employees = await db.query('select * from employee');
+            const employeeList = employees.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
 
-            }
-        ];
-        const updateRole = await prompt(updateEmployeeRole);
-    } else if (selection === "View All Roles") {
-        viewRoles();
-    } else if (selection === "Add Role") {
-        const newRole = await prompt(addRole);
-        const addRole = [
-            {
-                type: "input",
-                name: "roleName",
-                message: "What is the name of the role?"
-            },
-            {
-                type: "input",
-                name: "roleSalary",
-                message: "What is the salary for this role?"
-            },
-            {
-                type: "list",
-                name: "role",
-                message: "Which department does the role belong to?",
-                choices: [""], //list of departments from db
-                default: "Product"
-            }
-        ];
-    } else if (selection === "View All Departments") {
-        viewDepartments();
+            const addEmployee = [
+                {
+                    type: "input",
+                    name: "employeeFirstName",
+                    message: "What is the employee's first name?"
+                },
+                {
+                    type: "input",
+                    name: "employeeLastName",
+                    message: "What is the employee's last name?"
+                },
+                {
+                    type: "list",
+                    name: "employeeRole",
+                    message: "What is the employee's role?",
+                    choices: employeeRoles
+                },
+                {
+                    type: "list",
+                    name: "employeeManager",
+                    message: "Who is the employee's manager?",
+                    choices: employeeList
+                }
+            ]
+            await prompt(addEmployee);
+            addNewEmployee();
+            viewEmployees();
+            startQuestions();
+            break;
+        case "Update Employee Role":
+            //call db for all employees select concat first and last name of employee
+            const allEmps = await db.query('select * from employee');
+            const empList = allEmps.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+            //console.log(allEmployees);
 
-    } else if (selection === "Add Departments") {
-        const newDepartment = await prompt(addDepartment);
+            const allRoles = await db.query('select * from role');
+            const roleList = allRoles.map(({ title, id }) => ({ name: title, value: id }));
 
-        const addDepartment = [
-            {
-                type: "input",
-                name: "departmentName",
-                message: "What is the name of the department?"
-            }
-        ];
-        addDepartment(department);
-        startQuestions();
+            const roleQuestions = [
+                {
+                    input: "list",
+                    name: "updateRoleEmployeeName",
+                    message: "Which employee's role do you want to update?",
+                    choices: empList
+                },
+                {
+                    input: "list",
+                    name: "roleList",
+                    message: "Which role do you want to assign to the selected employee?",
+                    choices: roleList
 
-    } else if (selection === "Quit") {
-        startQuestions();
+                }
+            ];
+            const updateRole = await prompt(roleQuestions);
+            updateEmployeeRole(updateRole);
+            startQuestions();
+            break;
+        case "View All Roles":
+            viewRoles();
+            startQuestions();
+            break;
+        case "Add Role":
+            const departments = await db.query('select * from department');
+            const depts = departments.map(dep => ({ value: dep.id, name: dep.dept_name }));
+
+            const newRoleQuestions = [
+                {
+                    type: "input",
+                    name: "title",
+                    message: "What is the name of the role?"
+                },
+                {
+                    type: "input",
+                    name: "salary",
+                    message: "What is the salary for this role?"
+                },
+                {
+                    type: "list",
+                    name: "department_id",
+                    message: "Which department does the role belong to?",
+                    choices: depts
+                }
+            ];
+            const newRole = await prompt(newRoleQuestions);
+            addRole(newRole);
+            startQuestions();
+            break;
+        case "View All Departments":
+            viewDepartments();
+            startQuestions();
+            break;
+        case "Add Departments":
+            const addDepartment = [
+                {
+                    type: "input",
+                    name: "departmentName",
+                    message: "What is the name of the department?"
+                }
+            ];
+            const newDepartment = await prompt(addDepartment);
+            addDepartment(department);
+            startQuestions();
+            break;
+        default:
+            startQuestions();
+            break;
     };
 };
-
-
-
-
 
 function init() {
     loadImage();
