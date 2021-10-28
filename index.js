@@ -44,7 +44,6 @@ const viewEmployees = () => {
 };
 
 const addDepartment = (department) => {
-    console.log(department);
     db.query(`INSERT INTO department (dept_name) VALUE (?)`, [department.departmentName],
         (err) => {
             if (err) {
@@ -106,7 +105,6 @@ const viewDepartments = () => {
 };
 
 const viewRoles = () => {
-    // console.log(selection);
     db.query(`
     SELECT
     r.id AS 'Role ID',
@@ -127,7 +125,8 @@ const viewRoles = () => {
 };
 
 const updateEmployeeRole = (role) => {
-    db.query(`UPDATE employee SET employee.role_id = (?) where employee.id = (?)`,
+    console.log(role);
+    db.query(`UPDATE employee e SET e.role_id = (?) where employee.id = (?)`, [role.roleList, role.employeeList],
         (err) => {
             if (err) {
                 throw err
@@ -135,6 +134,7 @@ const updateEmployeeRole = (role) => {
             console.log('');
             console.log('');
             console.log('Employees role has been updated!');
+            viewEmployees();
             console.log('press up or down to continue');
         });
 };
@@ -212,10 +212,7 @@ const selectionTriage = async selection => {
         case "Update Employee Role":
             const [empQuery] = await db.promise().query
                 ('select * from employee');
-            // console.log(empQuery);
             const empList = empQuery.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
-
-            // console.log(empList)
 
             const [allRoles] = await db.promise().query('select * from role');
             const roleList = allRoles.map(role => ({ value: role.id, name: role.title }));
@@ -223,7 +220,7 @@ const selectionTriage = async selection => {
             const roleQuestions = [
                 {
                     type: "list",
-                    name: "updateRoleEmployeeName",
+                    name: "employeeList",
                     message: "Which employee's role do you want to update?",
                     choices: empList
                 },
@@ -235,10 +232,8 @@ const selectionTriage = async selection => {
 
                 }
             ];
-            // console.log(roleQuestions);
             const updateRole = await
                 prompt(roleQuestions);
-            // console.log('line 234' + updateRole);
             updateEmployeeRole(updateRole);
             startQuestions();
 

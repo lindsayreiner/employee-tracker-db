@@ -2,9 +2,6 @@ INSERT INTO department (dept_name)
 VALUES ('Product'),
        ('Engineering'),
        ('Operations'),
-       ('Finance'),
-       ('Legal'),
-       ('Human Relations'),
        ('C-Suite');
 
 
@@ -12,21 +9,11 @@ INSERT INTO role (title, salary, department_id)
 VALUES ('Head of Product', 150000.00, 1),
        ('Product Manager', 120000.00, 1),
        ('UI/UX Designer', 90000.00, 1),
-       ('Software Engineer', 130000.00, 2),
        ('Lead Engineer', 150000.00, 2),
+       ('Software Engineer', 130000.00, 2),
        ('Ops Manager', 120000.00, 3),
        ('Business Analyst', 90000.00, 3),
-       ('Team Leader', 70000.00, 3),
-       ('Cust Svc Rep', 35000.00, 3),
-       ('Accountant', 90000.00, 4),
-       ('Head of Finance', 120000.00, 4),
-       ('Legal Director', 150000.00, 5),
-       ('Lawyer', 120000.00, 5),
-       ('HR Manager', 90000.00, 6),
-       ('HR Generalist', 75000.00, 6),
-       ('CEO', 1500000.00, 7),
-       ('CFO', 1000000.00, 7),
-       ('COO', 1000000.00, 7);
+       ('CEO', 1500000.00, 7);
 
 
 INSERT INTO employee (first_name, last_name, role_id)
@@ -37,26 +24,4 @@ VALUES ('Mark', 'Cuban', 16),
        ('Kanye', 'West', 5),
        ('Khloe', 'Kardashian', 6),
        ('Kylie', 'Jenner', 11),
-       ('Kris', 'Jenner', 12),
-       ('Elon', 'Musk', 14),
-       ('Jeff', 'Bezos', 3),
-       ('Bill', 'Gates', 3),
-       ('Barbara', 'Corchran', 3),
-       ('Marcus', 'Sheridan', 4),
-       ('Oprah', 'Winfrey', 4),
-       ('Ruth', 'Bader Ginsburg', 6),
-       ('Robert', 'Kardashian', 6),
-       ('Dave', 'Ramsey', 6),
-       ('Bernard', 'Madoff', 10),
-       ('Michelle', 'Obama', 13),
-       ('Steve', 'Wozniak', 15),
-       ('Sundar', 'Pichai', 15),
-       ('Stewart', 'Butterfield', 13),
-       ('Tim', 'Cook', 13),
-       ('Dan', 'Schulman', 4),
-       ('Steve', 'Jobs', 4),
-       ('Warren', 'Buffett', 7),
-       ('Richard', 'Branson', 8),
-       ('Melinda', 'Gates', 9),
-       ('Beyonce', 'Knowles', 9),
-       ('Shawn', 'Carter', 9);
+       ('Kris', 'Jenner', 12);
