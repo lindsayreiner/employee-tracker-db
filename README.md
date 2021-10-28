@@ -8,7 +8,7 @@ This allows a company to track all of their employees, roles, and departments, a
 
 # Walkthrough video
 
-URL:
+URL: https://watch.screencastify.com/v/hxvopNyhvgQQ5Rpa4cAU
 
 # Table of contents
 
