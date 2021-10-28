@@ -37,6 +37,7 @@ const viewEmployees = () => {
             if (err) {
                 throw err
             }
+            console.log('');
             console.table(results);
             console.log('press up or down to continue');
         });
@@ -58,12 +59,14 @@ const addDepartment = (department) => {
 };
 
 const addNewEmployee = (employee) => {
-    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, [employee.first_name, employee.last_name, employee.role_id, employee.manager_id],
+    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, [employee.firstName, employee.lastName, employee.role, employee.manager],
 
         (err) => {
             if (err) {
                 throw err
             }
+            console.log('');
+            console.log('');
             console.log('Employee added successfully!');
             viewEmployees();
             console.log('press up or down to continue');
@@ -181,32 +184,30 @@ const selectionTriage = async selection => {
             const addEmployee = [
                 {
                     type: "input",
-                    name: "employeeFirstName",
+                    name: "firstName",
                     message: "What is the employee's first name?"
                 },
                 {
                     type: "input",
-                    name: "employeeLastName",
+                    name: "lastName",
                     message: "What is the employee's last name?"
                 },
                 {
                     type: "list",
-                    name: "employeeRole",
+                    name: "role",
                     message: "What is the employee's role?",
                     choices: employeeRoles
                 },
                 {
                     type: "list",
-                    name: "employeeManager",
+                    name: "manager",
                     message: "Who is the employee's manager?",
                     choices: employeeList
                 }
             ]
             const newEmployee = await prompt(addEmployee);
             addNewEmployee(newEmployee);
-            viewEmployees();
             startQuestions();
-
             break;
         case "Update Employee Role":
             const [empQuery] = await db.promise().query
