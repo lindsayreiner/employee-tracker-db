@@ -43,11 +43,14 @@ const viewEmployees = () => {
 };
 
 const addDepartment = (department) => {
-    db.query(`INSERT INTO department (dept_name) VALUE (?)`, department,
+    console.log(department);
+    db.query(`INSERT INTO department (dept_name) VALUE (?)`, [department.departmentName],
         (err) => {
             if (err) {
                 throw err
             }
+            console.log('');
+            console.log('');
             console.log('Department added successfully!');
             viewDepartments();
             console.log('press up or down to continue');
@@ -56,6 +59,7 @@ const addDepartment = (department) => {
 
 const addNewEmployee = (employee) => {
     db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, [employee.first_name, employee.last_name, employee.role_id, employee.manager_id],
+
         (err) => {
             if (err) {
                 throw err
@@ -72,6 +76,8 @@ const addRole = (role) => {
             if (err) {
                 throw err
             }
+            console.log('');
+            console.log('');
             console.log('Role added successfully!');
             viewRoles();
             console.log('press up or down to continue');
@@ -89,14 +95,15 @@ const viewDepartments = () => {
             if (err) {
                 throw err
             }
-
+            console.log('');
+            console.log('');
             console.table(results);
             console.log('press up or down to continue');
         });
 };
 
-const viewRoles = (selection) => {
-    console.log(selection);
+const viewRoles = () => {
+    // console.log(selection);
     db.query(`
     SELECT
     r.id AS 'Role ID',
@@ -109,7 +116,8 @@ const viewRoles = (selection) => {
             if (err) {
                 throw err
             }
-
+            console.log('');
+            console.log('');
             console.table(results);
             console.log('press up or down to continue');
         });
@@ -121,6 +129,8 @@ const updateEmployeeRole = (role) => {
             if (err) {
                 throw err
             }
+            console.log('');
+            console.log('');
             console.log('Employees role has been updated!');
             console.log('press up or down to continue');
         });
@@ -196,34 +206,41 @@ const selectionTriage = async selection => {
             addNewEmployee(newEmployee);
             viewEmployees();
             startQuestions();
+
             break;
         case "Update Employee Role":
-            const empQuery = await db.query('select * from employee');
+            const [empQuery] = await db.promise().query
+                ('select * from employee');
+            // console.log(empQuery);
             const empList = empQuery.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
-            console.log(empList)
 
+            // console.log(empList)
 
-            const allRoles = await db.query('select * from role');
-            const roleList = allRoles.map(({ title, id }) => ({ name: title, value: id }));
+            const [allRoles] = await db.promise().query('select * from role');
+            const roleList = allRoles.map(role => ({ value: role.id, name: role.title }));
 
             const roleQuestions = [
                 {
-                    input: "list",
+                    type: "list",
                     name: "updateRoleEmployeeName",
                     message: "Which employee's role do you want to update?",
                     choices: empList
                 },
                 {
-                    input: "list",
+                    type: "list",
                     name: "roleList",
                     message: "Which role do you want to assign to the selected employee?",
                     choices: roleList
 
                 }
             ];
-            const updateRole = await prompt(roleQuestions);
+            // console.log(roleQuestions);
+            const updateRole = await
+                prompt(roleQuestions);
+            // console.log('line 234' + updateRole);
             updateEmployeeRole(updateRole);
             startQuestions();
+
             break;
         case "View All Roles":
             viewRoles();
@@ -259,15 +276,15 @@ const selectionTriage = async selection => {
             viewDepartments();
             startQuestions();
             break;
-        case "Add Departments":
-            const addDepartment = [
+        case "Add Department":
+            const addDeptQuestions = [
                 {
                     type: "input",
                     name: "departmentName",
                     message: "What is the name of the department?"
                 }
             ];
-            const newDepartment = await prompt(addDepartment);
+            const newDepartment = await prompt(addDeptQuestions);
             addDepartment(newDepartment);
             startQuestions();
             break;
