@@ -1,12 +1,7 @@
 const { prompt } = require('inquirer');
-require('console.table');
 const logo = require('asciiart-logo');
-// const config = require('./package.json');
-
 const db = require('./db/connection');
-
-// const dbQueries = require('./db/index.js');
-
+require('console.table');
 
 //Main menu----------------------------------------------------------------
 const mainActionMenu = [
@@ -60,8 +55,7 @@ const addDepartment = (department) => {
 };
 
 const addNewEmployee = (employee) => {
-    const employeeInsertion = [employee.first_name, employee.last_name, eemployee.role_id, eemployee.manager_id]
-    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, employeeInsertion,
+    db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUE (?, ?, ?, ?)`, [employee.first_name, employee.last_name, employee.role_id, employee.manager_id],
         (err) => {
             if (err) {
                 throw err
@@ -73,7 +67,6 @@ const addNewEmployee = (employee) => {
 };
 
 const addRole = (role) => {
-    console.log('role:', role);
     db.query(`INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`, [role.title, role.salary, role.department_id],
         (err) => {
             if (err) {
@@ -171,6 +164,7 @@ const selectionTriage = async selection => {
             const roles = await db.query('select * from role');
             const employeeRoles = roles.map(({ title, id }) => ({ name: title, value: id }));
 
+
             const employees = await db.query('select * from employee');
             const employeeList = employees.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
 
@@ -198,16 +192,16 @@ const selectionTriage = async selection => {
                     choices: employeeList
                 }
             ]
-            await prompt(addEmployee);
-            addNewEmployee();
+            const newEmployee = await prompt(addEmployee);
+            addNewEmployee(newEmployee);
             viewEmployees();
             startQuestions();
             break;
         case "Update Employee Role":
-            //call db for all employees select concat first and last name of employee
-            const allEmps = await db.query('select * from employee');
-            const empList = allEmps.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
-            //console.log(allEmployees);
+            const empQuery = await db.query('select * from employee');
+            const empList = empQuery.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+            console.log(empList)
+
 
             const allRoles = await db.query('select * from role');
             const roleList = allRoles.map(({ title, id }) => ({ name: title, value: id }));
@@ -274,7 +268,7 @@ const selectionTriage = async selection => {
                 }
             ];
             const newDepartment = await prompt(addDepartment);
-            addDepartment(department);
+            addDepartment(newDepartment);
             startQuestions();
             break;
         default:
