@@ -10,7 +10,7 @@ const mainActionMenu = [
         name: "selectAction",
         message:
             "What would you like to do?",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit"],
+        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Remove Department", "Remove Role", "Remove Employee", "Quit"],
         default: "View All Employees"
     }
 ];
@@ -125,8 +125,7 @@ const viewRoles = () => {
 };
 
 const updateEmployeeRole = (role) => {
-    console.log(role);
-    db.query(`UPDATE employee e SET e.role_id = (?) where employee.id = (?)`, [role.roleList, role.employeeList],
+    db.query(`UPDATE employee e SET e.role_id = (?) where e.id = (?)`, [role.roleList, role.employeeList],
         (err) => {
             if (err) {
                 throw err
@@ -139,6 +138,47 @@ const updateEmployeeRole = (role) => {
         });
 };
 
+const deleteDepartment = (department) => {
+    db.query('DELETE FROM department d WHERE d.id = (?)', [department.del_dep_id],
+        (err) => {
+            if (err) {
+                throw err
+            }
+            console.log('');
+            console.log('');
+            console.log('Department deleted successfully!');
+            viewDepartments();
+            console.log('press up or down to continue');
+        });
+};
+
+const deleteRole = (role) => {
+    db.query('DELETE FROM role r WHERE r.id = (?)', [role.del_role_id],
+        (err) => {
+            if (err) {
+                throw err
+            }
+            console.log('');
+            console.log('');
+            console.log('Role deleted successfully!');
+            viewRoles();
+            console.log('press up or down to continue');
+        });
+};
+
+const deleteEmployee = (employee) => {
+    db.query('DELETE FROM employee e WHERE e.id = (?)', [employee.del_emp_id],
+        (err) => {
+            if (err) {
+                throw err
+            }
+            console.log('');
+            console.log('');
+            console.log('Employee deleted successfully!');
+            viewEmployees();
+            console.log('press up or down to continue');
+        });
+};
 //Start question flow --------------------------------------------------------------------
 
 const loadImage = () => {
@@ -284,10 +324,62 @@ const selectionTriage = async selection => {
             addDepartment(newDepartment);
             startQuestions();
             break;
+        case "Remove Department":
+            const deptList = await db.query('select * from department');
+            const deleteDept = deptList.map(dept => ({ value: dept.id, name: dept.dept_name }));
+
+            const deleteDeptQuestions = [
+                {
+                    type: "list",
+                    name: "del_dep_id",
+                    message: "Which department would you like to remove?",
+                    choices: deleteDept
+                }
+            ];
+
+            const deletedDept = await prompt(deleteDeptQuestions);
+            deleteDepartment(deletedDept);
+            startQuestions();
+            break;
+        case "Remove Role":
+            const allRolesList = await db.query('select * from role');
+            const mappedRoles = allRolesList.map(roleDel => ({ name: roleDel.title, value: roleDel.id }));
+
+            const deleteRoleQuestions = [
+                {
+                    type: "list",
+                    name: "del_role_id",
+                    message: "Which department would you like to remove?",
+                    choices: mappedRoles
+                }
+            ];
+
+            const deletedRole = await prompt(deleteRoleQuestions);
+            deleteRole(deletedRole);
+            startQuestions();
+            break;
+        case "Remove Employee":
+            const allEmployeeList = await db.query('select * from employee');
+            const mappedEmployees = allEmployeeList.map(({ first_name, last_name }) => ({ name: `${first_name} ${last_name}`, value: id }));
+
+            const deleteEmpQuestions = [
+                {
+                    type: "list",
+                    name: "del_emp_id",
+                    message: "Which employee would you like to remove?",
+                    choices: mappedEmployees
+                }
+            ];
+
+            const deletedEmp = await prompt(deleteEmpQuestions);
+            deleteEmployee(deletedEmp);
+            startQuestions();
+            break;
         default:
             startQuestions();
             break;
     };
+
 };
 
 function init() {
